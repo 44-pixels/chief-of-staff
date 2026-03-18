@@ -1,0 +1,18 @@
+{
+  "id": "chief-of-staff",
+  "name": "Chief of Staff", 
+  "description": "Automated meeting preparation for product marketing meetings",
+  "workspace": "/Users/noammini/.openclaw/workspace-chief-of-staff",
+  "agentDir": "/Users/noammini/.openclaw/agents/chief-of-staff/agent",
+  "model": "anthropic/claude-sonnet-4-20250514",
+  "identity": {
+    "name": "Chief of Staff",
+    "emoji": "📋"
+  },
+  "subagents": {
+    "allowAgents": ["44growth", "creative-strategist"]
+  },
+  "tools": {
+    "deny": ["group:runtime"]
+  }
+}
