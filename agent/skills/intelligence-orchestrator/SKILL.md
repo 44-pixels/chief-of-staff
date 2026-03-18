@@ -55,13 +55,31 @@ apify_scan_competitors(competitor_pages_for_product, max_ads=5)
 
 **Expected Output:** New competitor creatives, messaging shifts, creative insights
 
+### 5. Context Intelligence (Email + Slack)
+**Email Search (gog):**
+```python
+# Product-specific email context
+gog_search_emails(product, attendees, lookback_days=7)
+# Patterns: decisions, blockers, budget updates, performance discussions
+```
+
+**Slack Search (message tool):**
+```python
+# Product channel context
+search_slack_channels(product_channels[product], days=7)
+# Extract: team sentiment, recent updates, active discussions, feedback
+```
+
+**Expected Output:** Recent decisions, team sentiment, blockers, action item status
+
 ## Orchestration Logic
 
 ### Parallel Execution
 1. **Launch All Agents Simultaneously** (performance + creative analysis)
 2. **Execute API Calls** (Sensor Tower + conditional Apify)  
-3. **Wait for Completion** (max 5 minutes total)
-4. **Aggregate Results** into unified intelligence report
+3. **Gather Context Intelligence** (Email via gog + Slack via message tool)
+4. **Wait for Completion** (max 5 minutes total)
+5. **Aggregate Results** into unified intelligence report
 
 ### Data Synthesis
 ```python
@@ -71,6 +89,7 @@ intelligence_report = {
     "performance": performance_data,
     "creatives": creative_data, 
     "competitive": competitive_data,
+    "context": context_intelligence,  # NEW: Email + Slack context
     "alerts": identified_alerts,
     "recommendations": strategic_recommendations,
     "next_steps": actionable_items

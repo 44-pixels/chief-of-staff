@@ -183,3 +183,77 @@ For issues or enhancements, contact the 44pixels development team.
 - 🔄 **Testing:** Real calendar integration via `gog`
 - 🔄 **Validation:** Agent spawning (44growth, creative-strategist)
 - 🔄 **Verification:** Report deployment to 44reports MCP
+
+## Context Intelligence Enhancement ✅
+
+### NEW: Email & Slack Integration
+The Chief of Staff now gathers context from communication channels:
+
+**📧 Email Context (via gog):**
+- Recent decisions and approvals
+- Active blockers and issues  
+- Performance discussions
+- Budget and campaign updates
+- Action items and follow-ups
+
+**💬 Slack Context (via message tool):**
+- Team sentiment analysis
+- Recent product discussions
+- Creative feedback and insights
+- Real-time team pulse
+
+### Enhanced Report Sections
+
+**Team Context & Recent Developments:**
+```markdown
+### 📧 Email Intelligence (12 threads)
+Found 12 recent email threads, 3 decisions mentioned, 1 potential blocker, 
+4 performance discussions. Team sentiment appears positive.
+
+### 💬 Team Sentiment  
+😊 **Positive** - Based on recent communication patterns
+
+### 📋 Recent Developments
+**Decisions Made:**
+- Approved new creative tests for Q2
+- Increased budget allocation for winning hooks
+- Launched competitor analysis initiative
+
+**Active Issues:**
+- Creative approval workflow delayed
+```
+
+### Context-Driven Action Items
+```markdown
+## Action Items
+- [ ] Review performance trends
+- [ ] Discuss budget allocation
+- [ ] Plan upcoming creative tests
+- [ ] Address active blockers identified in emails
+- [ ] Follow up on recent decisions and implementation status  
+- [ ] Review 3 outstanding action items from communications
+```
+
+### Intelligence Sources Overview
+1. **Performance Data** (44growth agent)
+2. **Creative Insights** (creative-strategist agent)  
+3. **Competitive Intelligence** (Sensor Tower MCP + Apify)
+4. **📧 Email Context** (gog Gmail search) ← NEW
+5. **💬 Slack Context** (message tool search) ← NEW
+
+### Context Search Patterns
+
+**Email Queries:**
+- `{product} (performance OR metrics OR campaign) after:{date}`
+- `{product} (decision OR approved OR blocked) after:{date}`
+- `{product} (budget OR spend OR cost) after:{date}`
+- `from:{attendee} {product} after:{date}`
+
+**Slack Channels by Product:**
+- **Vivi:** #vivi-marketing, #creative-feedback
+- **Clara:** #clara-team, #app-clara-product, #creative-feedback
+- **Cue:** #app-cue-product, #creative-feedback  
+- **Wordcast:** #wordcast, #creative-feedback
+- **GPTeen:** #app-gpteen-product, #creative-feedback
+
+This context intelligence makes meeting prep reports significantly more valuable and actionable! 📧💬📋
