@@ -8,12 +8,13 @@ Track development velocity, sprint progress, and team capacity to provide operat
 ### 1. **Sprint Velocity Analysis**
 ```python
 PRODUCT_JIRA_PROJECTS = {
-    'vivi': 'VIVI',
-    'clara': 'CLARA', 
-    'cue': 'CUE',
-    'wordcast': 'WC',
-    'gpteen': 'GPTEEN',
-    'platform': 'PLAT'  # Shared platform work
+    'vivi': 'VIVI',        # Board 270, simple
+    'clara': 'CLAP',       # Clara Product, product discovery 
+    'cue': 'VCS',          # Voices, Board 40, scrum
+    'wordcast': 'LIS',     # Listen, Board 237, simple  
+    'pixi': 'PIXI',        # Board 3, scrum
+    'gpteen': 'DES',       # Design (TBD - may need dedicated project)
+    'platform': 'BAC'     # Backends for shared infrastructure
 }
 
 async def analyze_sprint_velocity(product: str) -> Dict[str, Any]:
