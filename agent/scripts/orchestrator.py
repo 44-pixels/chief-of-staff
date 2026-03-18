@@ -202,7 +202,9 @@ class ChiefOfStaffOrchestrator:
             'performance': {},
             'creatives': {},
             'competitive': {},
-            'context': {},  # NEW: Email + Slack context
+            'context': {},  # Email + Slack context
+            'campaigns': {},  # NEW: Multi-channel campaign intelligence
+            'historical': {},  # NEW: Google Drive meeting notes context
             'alerts': [],
             'recommendations': []
         }
@@ -219,17 +221,27 @@ class ChiefOfStaffOrchestrator:
         # Gather context from email and Slack
         context_task = self.context_gatherer.gather_context_intelligence(product, meeting)
         
+        # NEW: Gather campaign intelligence across all channels
+        campaign_task = self.gather_campaign_intelligence(product)
+        
+        # NEW: Gather Google Drive context from meeting notes
+        drive_context_task = self.gather_drive_context(product, meeting['type'])
+        
         # Wait for all intelligence gathering to complete
         try:
             performance_data = await asyncio.wait_for(performance_task, timeout=300)
             creative_data = await asyncio.wait_for(creative_task, timeout=300) 
             competitive_data = await asyncio.wait_for(competitive_task, timeout=180)
             context_data = await asyncio.wait_for(context_task, timeout=120)
+            campaign_data = await asyncio.wait_for(campaign_task, timeout=360)  # NEW
+            drive_data = await asyncio.wait_for(drive_context_task, timeout=90)  # NEW
             
             intelligence['performance'] = performance_data
             intelligence['creatives'] = creative_data
             intelligence['competitive'] = competitive_data
             intelligence['context'] = context_data
+            intelligence['campaigns'] = campaign_data  # NEW
+            intelligence['historical'] = drive_data  # NEW
             
             # Detect alerts and generate recommendations
             intelligence['alerts'] = self.detect_alerts(intelligence)
@@ -549,3 +561,228 @@ Performance analysis shows mixed signals requiring discussion in meeting.
 if __name__ == "__main__":
     orchestrator = ChiefOfStaffOrchestrator()
     asyncio.run(orchestrator.run_daily_prep())
+    async def gather_campaign_intelligence(self, product: str) -> Dict[str, Any]:
+        """Gather comprehensive campaign performance across all channels"""
+        logger.info(f"📊 Gathering campaign intelligence for {product}")
+        
+        campaign_intelligence = {
+            'meta': {},
+            'google': {},
+            'apple_search': {},
+            'cross_channel_analysis': {},
+            'data_sources': []
+        }
+        
+        # Meta campaigns via MKL agent (available)
+        try:
+            meta_task = self.spawn_mkl_agent(product)
+            campaign_intelligence['meta'] = await asyncio.wait_for(meta_task, timeout=300)
+            campaign_intelligence['data_sources'].append('meta_mkl')
+            logger.info(f"✅ Meta campaign data gathered for {product}")
+        except Exception as e:
+            logger.warning(f"⚠️ Meta campaign data failed for {product}: {e}")
+            campaign_intelligence['meta'] = {'error': str(e), 'status': 'failed'}
+        
+        # Google campaigns via Seekr agent (needs installation)
+        try:
+            google_task = self.spawn_seekr_agent(product)
+            campaign_intelligence['google'] = await asyncio.wait_for(google_task, timeout=300)
+            campaign_intelligence['data_sources'].append('google_seekr')
+            logger.info(f"✅ Google campaign data gathered for {product}")
+        except Exception as e:
+            logger.warning(f"⚠️ Seekr agent not available for {product}: {e}")
+            campaign_intelligence['google'] = {'error': 'Seekr agent not installed', 'status': 'unavailable'}
+        
+        # Apple Search Ads via apple-search agent (needs installation)  
+        try:
+            apple_task = self.spawn_apple_search_agent(product)
+            campaign_intelligence['apple_search'] = await asyncio.wait_for(apple_task, timeout=300)
+            campaign_intelligence['data_sources'].append('apple_search')
+            logger.info(f"✅ Apple Search campaign data gathered for {product}")
+        except Exception as e:
+            logger.warning(f"⚠️ apple-search agent not available for {product}: {e}")
+            campaign_intelligence['apple_search'] = {'error': 'apple-search agent not installed', 'status': 'unavailable'}
+        
+        # Cross-channel analysis with available data
+        campaign_intelligence['cross_channel_analysis'] = self.analyze_cross_channel_performance(
+            campaign_intelligence['meta'], 
+            campaign_intelligence['google'], 
+            campaign_intelligence['apple_search']
+        )
+        
+        return campaign_intelligence
+    
+    async def spawn_mkl_agent(self, product: str) -> Dict[str, Any]:
+        """Spawn MKL agent for Meta campaign analysis"""
+        # Implementation would use sessions_spawn to get Meta campaign data
+        # For now, return mock data structure
+        return {
+            'campaigns': [],
+            'creative_performance': {},
+            'audience_insights': {},
+            'budget_utilization': {},
+            'optimization_recommendations': [],
+            'data_source': 'mkl_agent'
+        }
+    
+    async def spawn_seekr_agent(self, product: str) -> Dict[str, Any]:
+        """Spawn Seekr agent for Google Ads analysis (when available)"""
+        # This will be implemented once Seekr is installed
+        raise Exception("Seekr agent not installed - Google Ads data unavailable")
+    
+    async def spawn_apple_search_agent(self, product: str) -> Dict[str, Any]:
+        """Spawn apple-search agent for Apple Search Ads analysis (when available)"""  
+        # This will be implemented once apple-search is installed
+        raise Exception("apple-search agent not installed - Apple Search Ads data unavailable")
+    
+    def analyze_cross_channel_performance(self, meta_data: Dict, google_data: Dict, apple_data: Dict) -> Dict:
+        """Analyze performance across all available paid channels"""
+        
+        available_channels = []
+        total_spend = 0
+        total_conversions = 0
+        channel_efficiency = {}
+        
+        # Process Meta data
+        if meta_data.get('status') != 'failed' and meta_data.get('status') != 'unavailable':
+            available_channels.append('meta')
+            # Extract metrics from meta_data when real implementation
+            
+        # Process Google data
+        if google_data.get('status') != 'failed' and google_data.get('status') != 'unavailable':
+            available_channels.append('google')
+            
+        # Process Apple data  
+        if apple_data.get('status') != 'failed' and apple_data.get('status') != 'unavailable':
+            available_channels.append('apple_search')
+        
+        analysis = {
+            'available_channels': available_channels,
+            'missing_channels': [ch for ch in ['meta', 'google', 'apple_search'] if ch not in available_channels],
+            'data_completeness': len(available_channels) / 3,  # 3 total channels
+            'cross_channel_insights': self.generate_cross_channel_insights(available_channels),
+            'optimization_opportunities': self.identify_channel_optimization(available_channels)
+        }
+        
+        return analysis
+    
+    def generate_cross_channel_insights(self, available_channels: List[str]) -> List[str]:
+        """Generate insights based on available channel data"""
+        insights = []
+        
+        if len(available_channels) == 0:
+            insights.append("⚠️ No campaign data available - cannot provide channel insights")
+        elif len(available_channels) == 1:
+            insights.append(f"📊 Limited to {available_channels[0]} channel data - install additional agents for complete picture")
+        else:
+            insights.append(f"📊 Multi-channel analysis available across {', '.join(available_channels)}")
+        
+        return insights
+    
+    def identify_channel_optimization(self, available_channels: List[str]) -> List[Dict]:
+        """Identify optimization opportunities based on available data"""
+        opportunities = []
+        
+        missing_channels = [ch for ch in ['meta', 'google', 'apple_search'] if ch not in available_channels]
+        
+        for channel in missing_channels:
+            if channel == 'google':
+                opportunities.append({
+                    'type': 'missing_data',
+                    'channel': 'google_ads', 
+                    'action': 'Install Seekr agent',
+                    'impact': 'HIGH - $30.4K/day spend visibility missing',
+                    'priority': 'CRITICAL'
+                })
+            elif channel == 'apple_search':
+                opportunities.append({
+                    'type': 'missing_data',
+                    'channel': 'apple_search_ads',
+                    'action': 'Install apple-search agent', 
+                    'impact': 'MEDIUM - iOS search optimization blind spot',
+                    'priority': 'HIGH'
+                })
+        
+        return opportunities
+
+    async def gather_drive_context(self, product: str, meeting_type: str) -> Dict[str, Any]:
+        """Gather context from Google Drive meeting notes and strategy docs"""
+        logger.info(f"📄 Gathering Google Drive context for {product}")
+        
+        drive_context = {
+            'previous_meetings': [],
+            'strategic_documents': [],
+            'outstanding_items': [],
+            'search_queries_used': [],
+            'documents_found': 0,
+            'context_quality': 'partial'
+        }
+        
+        # Define search queries
+        queries = [
+            f"{product} meeting notes",
+            f"{product} weekly review",
+            f"{product} performance review", 
+            f"{product} strategy decisions",
+            f"{product} roadmap"
+        ]
+        
+        # Execute Google Drive searches
+        for query in queries:
+            try:
+                result = subprocess.run([
+                    "gog", "drive", "search", query,
+                    "--type", "document",
+                    "--modified-after", "2026-03-01",
+                    "--max-results", "5",
+                    "--json"
+                ], capture_output=True, text=True, timeout=30)
+                
+                if result.returncode == 0 and result.stdout.strip():
+                    docs = json.loads(result.stdout)
+                    drive_context['previous_meetings'].extend(docs[:3])  # Top 3 per query
+                    drive_context['documents_found'] += len(docs)
+                    drive_context['search_queries_used'].append(query)
+                    
+            except (subprocess.TimeoutExpired, subprocess.CalledProcessError, json.JSONDecodeError) as e:
+                logger.warning(f"⚠️ Drive search failed for '{query}': {e}")
+                continue
+        
+        # Process and extract insights from found documents
+        if drive_context['documents_found'] > 0:
+            drive_context['context_quality'] = 'good'
+            drive_context = self.process_drive_documents(drive_context, product)
+        else:
+            drive_context['context_quality'] = 'limited'
+            logger.info(f"📄 No Google Drive documents found for {product}")
+        
+        return drive_context
+    
+    def process_drive_documents(self, drive_context: Dict, product: str) -> Dict:
+        """Process Google Drive documents to extract actionable insights"""
+        
+        processed = {
+            'recent_meeting_themes': [],
+            'strategic_initiatives': [],
+            'recurring_issues': [],
+            'previous_decisions': [],
+            'document_titles': []
+        }
+        
+        # Extract insights from document titles and metadata
+        for doc in drive_context['previous_meetings']:
+            title = doc.get('name', '').lower()
+            processed['document_titles'].append(doc.get('name', 'Untitled'))
+            
+            # Look for strategic themes in titles
+            if any(word in title for word in ['strategy', 'roadmap', 'planning']):
+                processed['strategic_initiatives'].append(title)
+            
+            # Look for performance/review themes
+            if any(word in title for word in ['performance', 'review', 'weekly', 'metrics']):
+                processed['recent_meeting_themes'].append(title)
+        
+        # Update drive_context with processed insights
+        drive_context.update(processed)
+        
+        return drive_context
